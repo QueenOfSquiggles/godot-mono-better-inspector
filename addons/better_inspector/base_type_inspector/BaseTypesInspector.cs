@@ -51,7 +51,9 @@ namespace betterinspector.inspectors
         protected object editedObjectInstance = null;
 
         public string tooltip = "";
-        public BaseInspector() {}
+        public BaseInspector() {
+            //HintTooltip = "stub"; // forces use of tooltip
+        }
 
         private object cachedValue = null;
 
@@ -85,7 +87,8 @@ namespace betterinspector.inspectors
                 // perform generic attribute applications
                 ApplyInspectorAttributes();
                 initialized = true;
-                this.HintTooltip += "\n\t" + tooltip;
+                // need to clear the boldface and underline bbcode on the default inspector
+                HintTooltip = HintTooltip + "[/b][/u]\n" + tooltip + "\n\n[b][u]";
             }
             var realValue = GetEditedObject().Get(GetEditedProperty());
             if (cachedValue != null && cachedValue != realValue)
@@ -121,34 +124,26 @@ namespace betterinspector.inspectors
         protected abstract void Create();
         protected abstract void ValueChangedExternal(object n_value);
 
-        new public string GetTooltipText() // hide and override inherited function
-        {
-            GD.Print("Getting tooltip text");
-            return tooltip;
-        }
-
         public override Control _MakeCustomTooltip(string forText)
         {
             //FIXME How in the hell can I get this to actually run in-editor???
             GD.Print($"Creating a custom tooltip for the given tooltip text: \"{forText}\"");
-            
-            /*
+            GD.PushWarning("Maybe this will show when making a custom tooltip");
             var vbox = new VBoxContainer();
 
             var propLabel = new Label();
             propLabel.Text = $"{GetEditedObject().Get("name")}:{GetEditedProperty()}";
+            propLabel.RectMinSize = new Vector2(300, 50);
             vbox.AddChild(propLabel);
 
             var customTooltip = new RichTextLabel(); // lets tooltips use BB codes
             customTooltip.BbcodeEnabled = true;
-            customTooltip.BbcodeText = forText;
+            customTooltip.BbcodeText = "[wave]This is BBCode in the tooltip![/wave]";
+            customTooltip.RectMinSize = new Vector2(300, 50);
             vbox.AddChild(customTooltip);
-            return vbox;
-            */
 
-            var label = new Label();
-            label.Text = "@@@" + forText;
-            return label;
+            vbox.RectMinSize = new Vector2(300, 300);
+            return vbox;
         }
     }
 

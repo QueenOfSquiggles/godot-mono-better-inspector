@@ -17,7 +17,7 @@ public class ExampleNode : Node
 
     [Export]
     [EditorRange(0.0f, 10.0f)]
-    [Tooltip("Line 1 - lorem ipsum dolor sit amet, this is a really fucking long line. How will it cope? Seething? Crying? Wailing? C'mon c'mon crash on me. I dare you!!!", "Line 2", "Line 3", "Line 4")]
+    [Tooltip("[wave]Wavy[/wave]", "[b]BOLD[/b]", "[code]public static void[/code]")]
     public float varFloat = 3.57f;
 
     [Export]
