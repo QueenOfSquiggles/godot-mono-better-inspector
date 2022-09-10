@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://test/ExampleNode.cs" type="Script" id=1]
+
+[node name="ExampleNode" type="Node"]
+script = ExtResource( 1 )
+varInt = 0
+varFloat = 9.39583
+useBetterInspectorOnly = 25.0
+
+[node name="Control" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+size_flags_stretch_ratio = 0.0
