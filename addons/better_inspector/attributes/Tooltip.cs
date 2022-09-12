@@ -1,5 +1,6 @@
 using System;
 using betterinspector.inspectors;
+using betterinspector.inspectors.integrated;
 using Godot;
 
 namespace betterinspector.attributes
@@ -26,13 +27,13 @@ namespace betterinspector.attributes
             this.tooltip = tooltipLines[0];
             for(int i = 1; i < tooltipLines.Length; i++)
             {
-                tooltip += "\n" + tooltipLines[i];
+                tooltip += " \n" + tooltipLines[i];
             }
         }
 
-        public override void Apply(BaseInspector control)
+        public override void Apply(IBetterPropertyEditor control)
         {
-            control.tooltip = tooltip;
+            control.SetEditorTooltipText(tooltip);
         }
     }
 

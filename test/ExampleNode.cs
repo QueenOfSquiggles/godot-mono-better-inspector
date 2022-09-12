@@ -9,10 +9,10 @@ public class ExampleNode : Node
     //  - - - - - - - - - - - - -
 
     [Export]
-    [CustomLabel("More Expressive Label <3")]
-    [Tooltip("And there's even more information here!")]
-    [EditorRange(-15, 5)]
-    [BottomInspector]
+    // [CustomLabel("More Expressive Label <3")]
+    [Tooltip("this is an [code]int[/code] variable, exported with metadata for the [i][b]custom inspector")]
+    // [EditorRange(-15, 5)]
+    // [BottomInspector]
     public int varInt = 4;
 
     [Export]

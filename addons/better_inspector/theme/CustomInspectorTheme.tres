@@ -1,0 +1,36 @@
+[gd_resource type="Theme" load_steps=8 format=2]
+
+[ext_resource path="res://addons/better_inspector/fonts/NotoSans-Bold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://addons/better_inspector/fonts/NotoSans-Regular.tres" type="DynamicFont" id=2]
+[ext_resource path="res://addons/better_inspector/fonts/NotoSans-Mono.tres" type="DynamicFont" id=3]
+[ext_resource path="res://addons/better_inspector/fonts/NotoSans-Italic.tres" type="DynamicFont" id=4]
+[ext_resource path="res://addons/better_inspector/fonts/NotoSans-BoldItalic.tres" type="DynamicFont" id=5]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 1, 0, 1, 1 )
+
+[resource]
+default_font = ExtResource( 2 )
+Panel/styles/panel = SubResource( 1 )
+RichTextLabel/fonts/bold_font = ExtResource( 1 )
+RichTextLabel/fonts/bold_italics_font = ExtResource( 5 )
+RichTextLabel/fonts/italics_font = ExtResource( 4 )
+RichTextLabel/fonts/mono_font = ExtResource( 3 )
+RichTextLabel/fonts/normal_font = ExtResource( 2 )
+TooltipPanel/styles/panel = SubResource( 2 )

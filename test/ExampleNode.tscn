@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://test/ExampleNode.cs" type="Script" id=1]
 [ext_resource path="res://test/CustomTooltipTest.cs" type="Script" id=2]
+[ext_resource path="res://test/GDParseTest.gd" type="Script" id=3]
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -18,3 +19,9 @@ script = ExtResource( 2 )
 
 [node name="ExampleNode" type="Node" parent="."]
 script = ExtResource( 1 )
+varFloat = 6.58482
+useNormal = 0.894
+useBetterInspectorOnly = 36.0
+
+[node name="GDParseTest" type="Node" parent="."]
+script = ExtResource( 3 )

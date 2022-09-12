@@ -10,6 +10,6 @@ namespace betterinspector.attributes
     */
     public abstract class ExportVariableAttribute : Attribute
     {
-        public abstract void Apply(BaseInspector control);
+        public abstract void Apply(IBetterPropertyEditor editor);
     }
 }

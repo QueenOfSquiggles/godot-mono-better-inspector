@@ -1,5 +1,6 @@
 using System;
 using betterinspector.inspectors;
+using betterinspector.inspectors.integrated;
 using Godot;
 
 namespace betterinspector.attributes
@@ -16,9 +17,9 @@ namespace betterinspector.attributes
             this.label = label;
         }
 
-        public override void Apply(BaseInspector control)
+        public override void Apply(IBetterPropertyEditor control)
         {
-            if (label != null && !label.Empty()) control.Label = label;
+            if (label != null && !label.Empty()) control.SetLabelText(label);
         }
     }
 

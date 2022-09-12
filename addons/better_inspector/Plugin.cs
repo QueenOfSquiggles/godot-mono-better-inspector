@@ -11,12 +11,23 @@ using System.Reflection;
 public class Plugin : EditorPlugin
 {
 
+    public static Plugin instance = null;
+
+
+    public Theme customInspectorTheme = null;
 
     private BaseTypesInspector inspectBaseTypes;
+
+    public Plugin()
+    {
+        if (instance != null) GD.PushError("Somehow, instance was not null before creation!");
+        instance = this;
+    }
 
     public override void _EnterTree()
     {
         // init
+        customInspectorTheme = GD.Load<Theme>("res://addons/better_inspector/theme/CustomInspectorTheme.tres");
         inspectBaseTypes = new BaseTypesInspector();
 
         // register
