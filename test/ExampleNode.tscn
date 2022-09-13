@@ -54,7 +54,6 @@ __meta__ = {
 }
 varInt = 25
 varFloat = -0.907
-colourB = 24
 
 [node name="GDParseTest" type="Node" parent="."]
 script = ExtResource( 3 )
