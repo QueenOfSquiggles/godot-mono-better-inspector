@@ -8,6 +8,7 @@ namespace betterinspector.inspectors.custom
         
         private EditorSpinSlider slider;
         private Label propertyLabel;
+        private Button resetButton;
 
         public CustomInspectorInteger(Object gdObj, object csObj, string handledProperty) : base(gdObj, csObj, handledProperty)
         {}
@@ -36,10 +37,14 @@ namespace betterinspector.inspectors.custom
             propertyLabel.SizeFlagsStretchRatio = 0.2f;
             box.AddChild(propertyLabel);
 
-            box.AddChild(CreateResetButton());
+            resetButton = CreateResetButton();
+            resetButton.Visible = !IsValueDefault();
+            box.AddChild(resetButton);
 
             slider = new EditorSpinSlider();
             slider.SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
+            slider.AllowGreater = true;
+            slider.AllowLesser = true;
             box.AddChild(slider);
 
             AddChild(box);
@@ -50,12 +55,14 @@ namespace betterinspector.inspectors.custom
         public void OnSliderValueChanged(float value)
         { // We need a transitory function to ensure the values match the needed variable type
             SaveNewValue((int)value);
+            resetButton.Visible = !IsValueDefault();
         }
 
         public override void ResetValue()
         {
             base.ResetValue();
             slider.Value = (int)gdObj.Get(propertyName);
+            resetButton.Visible = false;
         }
 
 
@@ -92,6 +99,13 @@ namespace betterinspector.inspectors.custom
         public override void SetLabelColour(Color colour)
         {
             propertyLabel.AddColorOverride("font_color", colour);
+        }
+
+        public override bool IsValueDefault()
+        {
+            var baseVal = (int)(csObj as Node).Get(propertyName);
+            var editVal = (int)(gdObj as Node).Get(propertyName);
+            return baseVal == editVal;
         }
     }
 }

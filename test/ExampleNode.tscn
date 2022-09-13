@@ -22,8 +22,6 @@ script = ExtResource( 1 )
 __meta__ = {
 "_editor_description_": ""
 }
-varInt = 0
-varIntTheSecond = 100
 
 [node name="GDParseTest" type="Node" parent="."]
 script = ExtResource( 3 )

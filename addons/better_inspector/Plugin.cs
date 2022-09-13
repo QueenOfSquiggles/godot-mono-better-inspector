@@ -17,6 +17,11 @@ public class Plugin : EditorPlugin
 
     private BaseTypesInspector inspectBaseTypes;
 
+    public Plugin()
+    {
+        instance = this;
+    }
+
     public override void _EnterTree()
     {
         instance = this;
@@ -45,7 +50,7 @@ public class Plugin : EditorPlugin
 
     public static Texture GetIcon(string icon)
     {
-        var gui = Plugin.instance.GetEditorInterface().GetBaseControl();
+        var gui = instance.GetEditorInterface().GetBaseControl();
         return gui.GetIcon(icon, "EditorIcons");
     }
 

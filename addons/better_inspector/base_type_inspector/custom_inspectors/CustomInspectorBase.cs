@@ -88,6 +88,8 @@ namespace betterinspector.inspectors.custom
             return label;
         }
 
+        public abstract bool IsValueDefault();
+
 
         public abstract Range GetRangeElement();
         public abstract void SetEditorCheckable(bool isCheckable);

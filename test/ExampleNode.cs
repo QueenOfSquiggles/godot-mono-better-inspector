@@ -25,17 +25,20 @@ namespace squiggles.demo
         [Category("Colours", "#FFFFFF")]
         [Export]
         public int colourA = 4;
+
         [LabelColour("#00FF00")]
         [Export]
         public int colourB = 4;
+
         [LabelColour("#0000FF")]
         [Export]
         public int colourC = 4;
+
         [LabelColour("#00FFFF")]
         [Export]
         public int colourD = 4;
 
-        [Category("Spatial Props", "#FF0000", "Spatial")]
+        [Category("Spatial Props", iconName = "Spatial")]
         [Export]
         public int spatialPropX = 5;
 

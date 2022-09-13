@@ -40,6 +40,11 @@ namespace betterinspector.inspectors
             if (scriptRef != null && scriptRef is CSharpScript)
             {
                 var obj = (scriptRef as CSharpScript).New();
+                if (obj == null)
+                {
+                    GD.PushError("Creating an instance from CSharpScript was found null!");
+                    return;
+                } 
                 GD.Print($"Handling custom properties\n\t {@object} : {customProperties}");
                 BuildCustomProperties(obj, @object);
             }
@@ -55,7 +60,7 @@ namespace betterinspector.inspectors
             heading.BbcodeText = $"[b]{gdObject.Get("name")}[/b]";
             heading.FitContentHeight = true;
             heading.HintTooltip = $"{(nameSpace.Empty() ? "__" : nameSpace)}:{csObj.GetType().Name}";
-            heading.Theme = Plugin.instance.customInspectorTheme;
+            if (Plugin.instance != null) heading.Theme = Plugin.instance.customInspectorTheme;
             vbox.AddChild(heading);
             vbox.AddChild(new HSeparator());
 
@@ -64,31 +69,51 @@ namespace betterinspector.inspectors
 
             foreach (var prop in customProperties)
             {
+                GD.Print($"Building custom editor element for {prop}");
                 var propObj = gdObject.Get(prop);
                 var cat = csObj.GetType().GetField(prop).GetCustomAttribute<Category>();
                 if (cat != null)
                 {
+                    GD.Print("Category Attribute Found!");
+                    int counter = 0;
+
+                    GD.Print($"#{counter++}");
                     currentCategory = new PanelContainer();
                     currentCategory.Name = $"Cat_{cat.name}_";
                     var catBox = new VBoxContainer();
                     currentCategory.AddChild(catBox);
                     target = catBox;
 
+                    GD.Print($"#{counter++}");
                     var btnToggle = new Button();
+                    GD.Print($"#{counter++}");
                     btnToggle.Text = cat.name;
-                    btnToggle.Icon = Plugin.GetIcon(cat.iconName);
-                    btnToggle.AddColorOverride("font_color", cat.fontColor);
-                    btnToggle.AddColorOverride("font_color_focus", cat.fontColor);
-                    btnToggle.AddColorOverride("font_color_hover", cat.fontColor);
-                    btnToggle.Connect("pressed", this, "ToggleElementVisible", new Array{currentCategory});
+                    GD.Print($"#{counter++} X");
+                    var icon = Plugin.GetIcon(cat.iconName);
+                    GD.Print($"#{counter++} A");
+                    if (icon != null) btnToggle.Icon = icon;
+                    GD.Print($"#{counter++} B");
+                    if (cat.fontColor != null)
+                    {
+                        btnToggle.AddColorOverride("font_color", cat.fontColor);
+                        btnToggle.AddColorOverride("font_color_focus", cat.fontColor);
+                        btnToggle.AddColorOverride("font_color_hover", cat.fontColor);
+                    }
+                    GD.Print($"#{counter++}");
 
+                    GD.Print($"#{counter++}");
+                    btnToggle.Connect("pressed", this, "ToggleElementVisible", new Array{currentCategory});
+                    ToggleElementVisible(currentCategory);
                     vbox.AddChild(btnToggle);
                     vbox.AddChild(currentCategory);
                 }
+                GD.Print("Generating type-specific editor");
                 switch (propObj.GetType().FullName)
                 {
                     case "System.Int32":
+                        GD.Print("Target is of type System.Int32");
                         target.AddChild(new CustomInspectorInteger(gdObject, csObj, prop));
+                        GD.Print("\tEdited added");
                         break;
                     default:
                         GD.PushWarning($"Custom properties of type {propObj.GetType().FullName} is not currently supported by custom inspectors, defaulting to integrated solution. Found on property '{prop}'");
