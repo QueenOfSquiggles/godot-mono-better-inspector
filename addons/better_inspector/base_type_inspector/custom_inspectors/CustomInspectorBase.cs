@@ -37,7 +37,6 @@ namespace betterinspector.inspectors.custom
 
         protected virtual void SaveNewValue(object value){
             gdObj.Set(propertyName, value);
-            GD.Print($"{gdObj.Get("name")}:{propertyName} was set to {value}");
         }
 
         protected abstract void Rebuild(bool vertical);
