@@ -13,19 +13,13 @@ public class Plugin : EditorPlugin
 
     public static Plugin instance = null;
 
-
     public Theme customInspectorTheme = null;
 
     private BaseTypesInspector inspectBaseTypes;
 
-    public Plugin()
-    {
-        if (instance != null) GD.PushError("Somehow, instance was not null before creation!");
-        instance = this;
-    }
-
     public override void _EnterTree()
     {
+        instance = this;
         // init
         customInspectorTheme = GD.Load<Theme>("res://addons/better_inspector/theme/CustomInspectorTheme.tres");
         inspectBaseTypes = new BaseTypesInspector();
@@ -47,6 +41,12 @@ public class Plugin : EditorPlugin
             && Attribute.IsDefined(t, typeof(ExportVariableAttribute)) 
             && (t.IsSubclassOf(typeof(Node)) || t.IsSubclassOf(typeof(Resource)))
             );
+    }
+
+    public static Texture GetIcon(string icon)
+    {
+        var gui = Plugin.instance.GetEditorInterface().GetBaseControl();
+        return gui.GetIcon(icon, "EditorIcons");
     }
 
 }

@@ -3,6 +3,7 @@
 // removes the "SiMpLiFy YoUr InItIaLiZaTiOn!!!! D:<" warning, which isn't even in this C# version
 
 using System.Linq;
+using System.Reflection;
 using betterinspector.attributes;
 using betterinspector.inspectors.custom;
 using betterinspector.inspectors.integrated;
@@ -51,19 +52,43 @@ namespace betterinspector.inspectors
             var heading = new RichTextLabel();
             heading.BbcodeEnabled = true;
             var nameSpace = csObj.GetType().Namespace;
-            heading.BbcodeText = $"[b]{gdObject.Get("name")}[/b]\n[wave]Custom Property Editors[/wave] [b]<3[/b]";
+            heading.BbcodeText = $"[b]{gdObject.Get("name")}[/b]";
             heading.FitContentHeight = true;
-            heading.HintTooltip = $"{(nameSpace.Empty() ? "__" : nameSpace)}:{csObj.GetType().FullName}";
+            heading.HintTooltip = $"{(nameSpace.Empty() ? "__" : nameSpace)}:{csObj.GetType().Name}";
+            heading.Theme = Plugin.instance.customInspectorTheme;
             vbox.AddChild(heading);
             vbox.AddChild(new HSeparator());
+
+            PanelContainer currentCategory = null;
+            Container target = vbox;
 
             foreach (var prop in customProperties)
             {
                 var propObj = gdObject.Get(prop);
+                var cat = csObj.GetType().GetField(prop).GetCustomAttribute<Category>();
+                if (cat != null)
+                {
+                    currentCategory = new PanelContainer();
+                    currentCategory.Name = $"Cat_{cat.name}_";
+                    var catBox = new VBoxContainer();
+                    currentCategory.AddChild(catBox);
+                    target = catBox;
+
+                    var btnToggle = new Button();
+                    btnToggle.Text = cat.name;
+                    btnToggle.Icon = Plugin.GetIcon(cat.iconName);
+                    btnToggle.AddColorOverride("font_color", cat.fontColor);
+                    btnToggle.AddColorOverride("font_color_focus", cat.fontColor);
+                    btnToggle.AddColorOverride("font_color_hover", cat.fontColor);
+                    btnToggle.Connect("pressed", this, "ToggleElementVisible", new Array{currentCategory});
+
+                    vbox.AddChild(btnToggle);
+                    vbox.AddChild(currentCategory);
+                }
                 switch (propObj.GetType().FullName)
                 {
                     case "System.Int32":
-                        vbox.AddChild(new CustomInspectorInteger(gdObject, csObj, prop));
+                        target.AddChild(new CustomInspectorInteger(gdObject, csObj, prop));
                         break;
                     default:
                         GD.PushWarning($"Custom properties of type {propObj.GetType().FullName} is not currently supported by custom inspectors, defaulting to integrated solution. Found on property '{prop}'");
@@ -73,6 +98,12 @@ namespace betterinspector.inspectors
             }
             AddCustomControl(vbox);
             foreach(var prop in clrEntries) customProperties.Remove(prop);
+        }
+
+        public void ToggleElementVisible(Control control)
+        {
+            GD.Print($"Toggling the visibility for control: {control.Name}");
+            control.Visible = !control.Visible;
         }
 
         public override bool ParseProperty(Object @object, int type, string path, int hint, string hintText, int usage)

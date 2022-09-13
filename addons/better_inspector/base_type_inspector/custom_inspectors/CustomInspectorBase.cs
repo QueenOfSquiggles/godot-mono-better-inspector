@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using betterinspector.attributes;
 using Godot;
 
@@ -10,7 +11,7 @@ namespace betterinspector.inspectors.custom
         protected object csObj;
         protected string propertyName;
 
-        protected Label propertyNameLabel = null;
+        protected Texture iconReset = null;
 
         public CustomInspectorBase(Object gdObj, object csObj, string handledProperty)
         {
@@ -18,16 +19,15 @@ namespace betterinspector.inspectors.custom
             this.csObj = csObj;
             propertyName = handledProperty;
             if (Plugin.instance != null) Theme = Plugin.instance.customInspectorTheme;
+            MouseFilter = MouseFilterEnum.Stop;
         }
 
         public override void _Ready()
         {
-            Rebuild();
-            var panelBox = new StyleBoxFlat();
-            panelBox.BgColor = new Color(0f,0f,0f);
-            panelBox.SetBorderWidthAll(2);
-            panelBox.BorderColor = new Color(1f, 0f, 1f);
-            Theme.SetStylebox("panel", "TooltipPanel", panelBox);
+            iconReset = Plugin.GetIcon("Reload");
+
+            Rebuild(false);
+            ParseCsharp();
         }
 
         protected object GetCurrentValue()
@@ -35,23 +35,20 @@ namespace betterinspector.inspectors.custom
             return gdObj.Get(propertyName);
         }
 
-        protected virtual void SaveNewValue(){
-
+        protected virtual void SaveNewValue(object value){
+            gdObj.Set(propertyName, value);
+            GD.Print($"{gdObj.Get("name")}:{propertyName} was set to {value}");
         }
 
-        protected virtual void Rebuild(){
-            propertyNameLabel = new Label();
-            propertyNameLabel.Text = propertyName;
-            AddChild(propertyNameLabel);
-            ParseCsharp();
-        }
+        protected abstract void Rebuild(bool vertical);
 
-        private void ParseCsharp()
+        protected void ParseCsharp()
         {
+            if (csObj == null) GD.PushError("csObj ref was found null!!!!");
             System.Reflection.FieldInfo field = csObj.GetType().GetField(propertyName);
             if (field != null)
             {
-                object[] attribs = field.GetCustomAttributes(false);
+                object[] attribs = field.GetCustomAttributes(true);
                 foreach (object a in attribs)
                 {
                     (a as ExportVariableAttribute)?.Apply(this);
@@ -61,6 +58,21 @@ namespace betterinspector.inspectors.custom
 
 /*
 */
+
+        protected virtual Button CreateResetButton()
+        {
+            var btn = new Button();
+            btn.Connect("pressed", this, "ResetValue");
+            btn.Icon = iconReset;
+            return btn;
+        }
+
+        public virtual void ResetValue()
+        {
+            var baseVal = (csObj as Node).Get(propertyName);
+            SaveNewValue(baseVal);
+        }
+
         public override Control _MakeCustomTooltip(string forText)
         {
             var nameSpace = csObj.GetType().Namespace;
@@ -82,16 +94,19 @@ namespace betterinspector.inspectors.custom
         public abstract void SetEditorDrawRed(bool isDrawRed);
         public abstract void SetEditorKeying(bool isKeying);
         public abstract void SetEditorReadOnly(bool isReadOnly);
+        public abstract void SetLabelText(string label);
 
         public virtual void SetEditorTooltipText(string tooltip)
         {
             this.HintTooltip = tooltip;
         }
         
-        public virtual void SetLabelText(string label)
+        public virtual void SetUseBottomEditor()
         {
-            propertyNameLabel.Text = label;
+            //Rebuild(true);
+            //ParseCsharp();
         }
-        public abstract void SetUseBottomEditor();
+
+        public abstract void SetLabelColour(Color colour);
     }
 }

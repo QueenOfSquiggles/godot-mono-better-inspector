@@ -205,6 +205,11 @@ namespace betterinspector.inspectors.integrated{
         public void SetEditorTooltipText(string tooltip) => this.tooltip = tooltip;
         public void SetLabelText(string label) => this.Label = label;
         public void SetUseBottomEditor() => this.SetBottomEditor(GetChild(0) as Control);
+
+        public void SetLabelColour(Color colour)
+        {
+            GD.PushError($"Arbitrary Label Colours on {GetEditedObject().Get("Name")}:{GetEditedProperty()} is not valid for integrated editors. Use the customized variant for more options");
+        }
     }
 
     [Tool]

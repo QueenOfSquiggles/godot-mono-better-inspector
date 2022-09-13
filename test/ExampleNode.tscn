@@ -19,9 +19,11 @@ script = ExtResource( 2 )
 
 [node name="ExampleNode" type="Node" parent="."]
 script = ExtResource( 1 )
-varFloat = 6.58482
-useNormal = 0.894
-useBetterInspectorOnly = 36.0
+__meta__ = {
+"_editor_description_": ""
+}
+varInt = 0
+varIntTheSecond = 100
 
 [node name="GDParseTest" type="Node" parent="."]
 script = ExtResource( 3 )
