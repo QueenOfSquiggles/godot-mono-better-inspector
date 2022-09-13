@@ -2,7 +2,7 @@ using Godot;
 
 namespace betterinspector.inspectors.custom
 {
-    public class CustomInspectorInteger : CustomInspectorBase
+    public class CustomInspectorFloat : CustomInspectorBase
     {
 
         
@@ -11,7 +11,7 @@ namespace betterinspector.inspectors.custom
         private Button resetButton;
         private Button keyingButton;
 
-        public CustomInspectorInteger(Object gdObj, object csObj, string handledProperty) : base(gdObj, csObj, handledProperty)
+        public CustomInspectorFloat(Object gdObj, object csObj, string handledProperty) : base(gdObj, csObj, handledProperty)
         {}
 
         protected override void Rebuild(bool vertical){
@@ -28,7 +28,7 @@ namespace betterinspector.inspectors.custom
                 box = new VBoxContainer();
             } else{
                 box = new HBoxContainer();
-            }
+            } 
             box.SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
 
             propertyLabel = new Label();
@@ -47,6 +47,7 @@ namespace betterinspector.inspectors.custom
             slider.SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             slider.AllowGreater = true;
             slider.AllowLesser = true;
+            slider.Step = 0.001; // no step size;
             box.AddChild(slider);
 
             keyingButton = CreateKeyframeButton();
@@ -54,19 +55,19 @@ namespace betterinspector.inspectors.custom
 
             AddChild(box);
             slider.Connect("value_changed", this, "OnSliderValueChanged");
-            slider.Value = (int)GetCurrentValue();
+            slider.Value = (float)GetCurrentValue();
         }
 
         public void OnSliderValueChanged(float value)
         { // We need a transitory function to ensure the values match the needed variable type
-            SaveNewValue((int)value);
+            SaveNewValue(value);
             resetButton.Visible = !IsValueDefault();
         }
 
         public override void ResetValue()
         {
             base.ResetValue();
-            slider.Value = (int)gdObj.Get(propertyName);
+            slider.Value = (float)gdObj.Get(propertyName);
             resetButton.Visible = false;
         }
 
@@ -109,8 +110,8 @@ namespace betterinspector.inspectors.custom
 
         public override bool IsValueDefault()
         {
-            var baseVal = (int)(csObj as Node).Get(propertyName);
-            var editVal = (int)(gdObj as Node).Get(propertyName);
+            var baseVal = (float)(csObj as Node).Get(propertyName);
+            var editVal = (float)(gdObj as Node).Get(propertyName);
             return baseVal.Equals(editVal);
         }
     }

@@ -12,6 +12,8 @@ namespace betterinspector.inspectors.custom
         protected string propertyName;
 
         protected Texture iconReset = null;
+        protected Texture iconKeyframe = null;
+        private bool isVertical = false;
 
         public CustomInspectorBase(Object gdObj, object csObj, string handledProperty)
         {
@@ -25,7 +27,7 @@ namespace betterinspector.inspectors.custom
         public override void _Ready()
         {
             iconReset = Plugin.GetIcon("Reload");
-
+            iconKeyframe = Plugin.GetIcon("Key");
             Rebuild(false);
             ParseCsharp();
         }
@@ -66,16 +68,31 @@ namespace betterinspector.inspectors.custom
             return btn;
         }
 
+        protected virtual Button CreateKeyframeButton()
+        {
+            var btn = new Button();
+            btn.Connect("pressed", this, "MakeKeyframe");
+            btn.Icon = iconKeyframe;
+            return btn;
+        }
+
         public virtual void ResetValue()
         {
             var baseVal = (csObj as Node).Get(propertyName);
             SaveNewValue(baseVal);
         }
 
+        public virtual void MakeKeyframe()
+        {
+            GD.PushError("Keyframing is not currently supporting in the customized interface!");
+            if(Plugin.instance == null) return;
+        }
+
         public override Control _MakeCustomTooltip(string forText)
         {
             var nameSpace = csObj.GetType().Namespace;
-            var headerText = $"[center][b]{(nameSpace.Empty()? "__" : nameSpace)}:{gdObj.Get("name")}:{propertyName}[/b][/center]";
+            System.Reflection.FieldInfo field = csObj.GetType().GetField(propertyName);
+            var headerText = $"[center][b]{(nameSpace.Empty()? "__" : nameSpace)}:{gdObj.Get("name")}:{propertyName}[/b] ({field.FieldType.Name})[/center]";
             var label = new RichTextLabel();
             label.BbcodeEnabled = true;
             label.BbcodeText = headerText + "\n" + forText;
@@ -102,10 +119,19 @@ namespace betterinspector.inspectors.custom
             this.HintTooltip = tooltip;
         }
         
-        public virtual void SetUseBottomEditor()
+        public virtual async void SetUseBottomEditor()
         {
-            //Rebuild(true);
-            //ParseCsharp();
+            if (!isVertical)
+            {
+                await System.Threading.Tasks.Task.Delay(20); 
+                // for some reason if this is done synchronously, the editor freezes for a long time.
+                // 40 milliseconds = 0.04 seconds. Barely noticable
+                Rebuild(true);
+
+                await System.Threading.Tasks.Task.Delay(20);
+                ParseCsharp();
+                isVertical = true;
+            }
         }
 
         public abstract void SetLabelColour(Color colour);
