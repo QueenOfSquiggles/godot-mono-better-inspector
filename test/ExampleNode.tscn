@@ -1,8 +1,38 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://test/ExampleNode.cs" type="Script" id=1]
 [ext_resource path="res://test/CustomTooltipTest.cs" type="Script" id=2]
 [ext_resource path="res://test/GDParseTest.gd" type="Script" id=3]
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("GDParseTest:anotherInt")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 5 ]
+}
+
+[sub_resource type="Animation" id=1]
+resource_name = "TestAnim"
+tracks/0/type = "value"
+tracks/0/path = NodePath("GDParseTest:anotherInt")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 5, -2 ]
+}
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -22,12 +52,14 @@ script = ExtResource( 1 )
 __meta__ = {
 "_editor_description_": ""
 }
-varInt = 9
-varIntTheSecond = 17
-colourA = 25
-colourB = 25
-colourC = 25
-colourD = 25
+varInt = 25
+varFloat = -0.907
+colourB = 24
 
 [node name="GDParseTest" type="Node" parent="."]
 script = ExtResource( 3 )
+testFloat = 0.4
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 2 )
+anims/TestAnim = SubResource( 1 )

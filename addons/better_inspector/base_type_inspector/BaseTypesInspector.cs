@@ -35,7 +35,7 @@ namespace betterinspector.inspectors
             }
 
             if (customProperties.Count <= 0) return; // no custom props
-
+            
             Reference scriptRef = @object.GetScript();
             if (scriptRef != null && scriptRef is CSharpScript)
             {
@@ -72,8 +72,6 @@ namespace betterinspector.inspectors
                 var cat = csObj.GetType().GetField(prop).GetCustomAttribute<Category>();
                 if (cat != null)
                 {
-                    int counter = 0;
-
                     currentCategory = new PanelContainer();
                     currentCategory.Name = $"Cat_{cat.name}_";
                     var catBox = new VBoxContainer();
@@ -100,8 +98,11 @@ namespace betterinspector.inspectors
                     case "System.Int32":
                         target.AddChild(new CustomInspectorInteger(gdObject, csObj, prop));
                         break;
+                    case "System.Single":
+                        target.AddChild(new CustomInspectorFloat(gdObject, csObj, prop));
+                        break;
                     default:
-                        GD.PushWarning($"Custom properties of type {propObj.GetType().FullName} is not currently supported by custom inspectors, defaulting to integrated solution. Found on property '{prop}'");
+                        GD.PushWarning($"Custom properties of type {propObj.GetType().FullName} is not currently supported by custom inspectors, defaulting to integrated solution. Found on property '{prop}' please use [UseIntegrated] to force use of the integrated system");
                         clrEntries.Add(prop);
                         break;
                 }

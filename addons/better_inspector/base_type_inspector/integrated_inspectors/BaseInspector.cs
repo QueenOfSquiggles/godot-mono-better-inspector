@@ -1,4 +1,3 @@
-
 using System.Linq;
 using betterinspector.attributes;
 using Godot;
@@ -29,6 +28,11 @@ namespace betterinspector.inspectors.integrated{
                 {
                     sysObj = (scriptRef as CSharpScript).New();
                 }
+                if (scriptRef is GDScript)
+                {
+                    // easy search, ## is specific to the meta-data generation
+                    return (scriptRef as GDScript).SourceCode.Contains("##");
+                }
             }
             if (sysObj == null)
             {
@@ -57,6 +61,7 @@ namespace betterinspector.inspectors.integrated{
             if (scriptRef != null)
             {
                 if (scriptRef is CSharpScript) sysObj = (scriptRef as CSharpScript).New();
+                if (scriptRef is GDScript) return true; // Force GDscript to use integrated
             }
             if (sysObj == null)
             {
@@ -86,15 +91,8 @@ namespace betterinspector.inspectors.integrated{
                 Reference scriptRef = GetEditedObject().GetScript();
                 if (scriptRef != null)
                 {
-                    if (scriptRef is CSharpScript)
-                    {
-                        ParseCsharp(scriptRef as CSharpScript);
-                    }
-
-                    if (scriptRef is GDScript)
-                    {
-                        ParseGdscript(scriptRef as GDScript);
-                    }
+                    if (scriptRef is CSharpScript) ParseCsharp(scriptRef as CSharpScript);
+                    if (scriptRef is GDScript) ParseGdscript(scriptRef as GDScript);
                 }
                 // Finish intialization
                 initialized = true;
@@ -130,25 +128,21 @@ namespace betterinspector.inspectors.integrated{
         }
 
         private void ParseGdscript(GDScript script)
-        {
-            // TODO how do we want to parse GDScript metadata
+        {            
             string[] lines = script.SourceCode.Split('\n');
             Array<string> commentLines = new Array<string>();
             // get the comment lines that precede the export declaration. Blocks need to be contiguous chains of "##" comments
             // attributes are parsed out from the @tagname tags, trying to emulate the Godot 4 style
             foreach (string line in lines)
             {
-                //GD.Print($"[Parsing({GetEditedProperty()})] > {line}");
                 if (line.Contains("##"))
                 {
                     commentLines.Add(line);
-                    GD.Print($"CommentLine '{line}'");
                 }
 
                 if (line.Contains(GetEditedProperty()) && line.Contains("export"))
                 {
                     // variable must be defined before it can be used. The first naming of it which also contains export keyword should be the export call
-                    GD.Print($"ExportLine '{line}'");
                     break; // we actually don't need this line, but it's the point at which we can stop caching blocks of comments
                 }
 
@@ -160,13 +154,75 @@ namespace betterinspector.inspectors.integrated{
             if (commentLines.Count > 0)
             {
                 // parse out comment attributes
-                tooltip = commentLines[0];
-                for (int i = 1; i < commentLines.Count; i++)
+                for (int i = 0; i < commentLines.Count; i++)
                 {
-                    tooltip += "\n" + commentLines[i];
+                    if(!commentLines[i].Contains('@')) // @ denotes a custom attribute
+                    {
+                        if (i > 0) tooltip += "\n";
+                        tooltip += commentLines[i].Replace("##", "");
+                    } else {
+                        var meta = ParseGDMetaLine(commentLines[i]);
+                        var demo = "";
+                        foreach(var m in meta) demo += m + "\n";
+                        switch(meta[0])
+                        {
+                            case "label":
+                                var lbl = meta[1];
+                                for(int j = 2; j < meta.Length; j++) lbl += meta[j];
+                                new CustomLabel(lbl).Apply(this);
+                                break;
+                            case "bottom":
+                                new BottomInspector().Apply(this);
+                                break;
+                            case "range":
+                            //  min, max, step, rounded, limits
+                                float min = 0.0f;
+                                float max = 1.0f;
+                                float step = 1.0f;
+                                bool rounded = false;
+                                EditorRange.RangeLimitOptions limits = EditorRange.RangeLimitOptions.CLAMP_BOTH;
+                                {
+                                    if (meta.Length >= 2) if (float.TryParse(meta[1], out var n_min)) min = n_min;
+                                    if (meta.Length >= 3) if (float.TryParse(meta[2], out var n_max)) max = n_max;
+                                    if (meta.Length >= 4) if (float.TryParse(meta[3], out var n_step)) step = n_step;
+                                    if (meta.Length >= 5) if (bool.TryParse(meta[4], out var n_rounded)) rounded = n_rounded;
+                                    if (meta.Length >= 6)
+                                    {
+                                        if (System.Enum.TryParse<EditorRange.RangeLimitOptions>(meta[5], true, out var n_limits)) limits = n_limits;
+                                    }
+                                }
+                                new EditorRange(min, max, step, rounded, limits).Apply(this);
+                                break;
+                        }
+
+                    }
                 }
             }
-            GD.Print("Property Comments:\n", commentLines);
+        }
+        private string[] ParseGDMetaLine(string line)
+        {
+            // returns an array where index 0 is the tag name, and all other elements are the parameters
+            var tagStart = line.Find('@');
+            var tagEnd = line.Find(" ", tagStart);
+            if (tagEnd < 0) return new string[]{line.Substr(tagStart+1, line.Length - tagStart)}; // lonely tag, no params
+            var tag = line.Substr(tagStart+1, tagEnd - (tagStart+1));
+            if (line.Length <= (tagEnd)+1) return new string[]{line.Substr(tagStart+1, line.Length - tagStart)}; // lonely tag, no params
+            var tokenLine = line.Substr(tagEnd+1, line.Length - (tagEnd+1));
+            var tokens = tokenLine.Split(",");
+            var arr = new string[tokens.Length+1];
+            if (tokens.Length <= 0)
+            {
+                arr = new string[2];
+                arr[0] = tag;
+                arr[1] = tokenLine;
+            }else{
+                arr[0] = tag;
+                for(int i = 0; i< tokens.Length; i++)
+                {
+                    arr[i+1] = tokens[i];
+                }
+            }
+            return arr;
         }
 
         protected void UpdateValue(object value)
