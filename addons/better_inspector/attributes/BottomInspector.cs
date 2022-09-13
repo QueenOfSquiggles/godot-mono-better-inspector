@@ -1,5 +1,6 @@
 using System;
 using betterinspector.inspectors;
+using betterinspector.inspectors.integrated;
 using Godot;
 
 namespace betterinspector.attributes
@@ -9,10 +10,9 @@ namespace betterinspector.attributes
     [AttributeUsage(AttributeTargets.Field)]
     public class BottomInspector : ExportVariableAttribute
     {
-        public override void Apply(BaseInspector control)
+        public override void Apply(IBetterPropertyEditor control)
         {
-            // TODO this isn't the safest option, but should work 99% of the time.
-            control.SetBottomEditor(control.GetChild(0) as Control);
+            control.SetUseBottomEditor();
         }
     }
 

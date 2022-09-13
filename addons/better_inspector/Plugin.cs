@@ -11,12 +11,22 @@ using System.Reflection;
 public class Plugin : EditorPlugin
 {
 
+    public static Plugin instance = null;
+
+    public Theme customInspectorTheme = null;
 
     private BaseTypesInspector inspectBaseTypes;
 
+    public Plugin()
+    {
+        instance = this;
+    }
+
     public override void _EnterTree()
     {
+        instance = this;
         // init
+        customInspectorTheme = GD.Load<Theme>("res://addons/better_inspector/theme/CustomInspectorTheme.tres");
         inspectBaseTypes = new BaseTypesInspector();
 
         // register
@@ -36,6 +46,12 @@ public class Plugin : EditorPlugin
             && Attribute.IsDefined(t, typeof(ExportVariableAttribute)) 
             && (t.IsSubclassOf(typeof(Node)) || t.IsSubclassOf(typeof(Resource)))
             );
+    }
+
+    public static Texture GetIcon(string icon)
+    {
+        var gui = instance.GetEditorInterface().GetBaseControl();
+        return gui.GetIcon(icon, "EditorIcons");
     }
 
 }

@@ -18,9 +18,17 @@ config/name="BetterInspector"
 run/main_scene="res://test/ExampleNode.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+mouse_cursor/tooltip_position_offset=Vector2( -250, 10 )
+
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/better_inspector/plugin.cfg" )
+
+[gui]
+
+timers/tooltip_delay_sec=0.1
 
 [rendering]
 

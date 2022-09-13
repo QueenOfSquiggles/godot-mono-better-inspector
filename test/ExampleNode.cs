@@ -2,33 +2,55 @@ using betterinspector.attributes;
 using Godot;
 using System;
 
-public class ExampleNode : Node
+namespace squiggles.demo
 {
-    //  - - - - - - - - - - - - -
-    //  Exported Vars
-    //  - - - - - - - - - - - - -
+    public class ExampleNode : Node
+    {
+        //  - - - - - - - - - - - - -
+        //  Exported Vars
+        //  - - - - - - - - - - - - -
 
-    [Export]
-    [CustomLabel("More Expressive Label <3")]
-    [Tooltip("And there's even more information here!")]
-    [EditorRange(-15, 5)]
-    [BottomInspector]
-    public int varInt = 4;
+        [Export]
+        [CustomLabel("Customized Integer!")]
+        [Tooltip("this is an [code]int[/code] variable, exported with metadata for the [i][b]custom inspector")]
+        public int varInt = 4;
 
-    [Export]
-    [EditorRange(0.0f, 10.0f)]
-    [Tooltip("[wave]Wavy[/wave]", "[b]BOLD[/b]", "[code]public static void[/code]")]
-    public float varFloat = 3.57f;
+        [BottomInspector]
+        [DrawRed]
+        [Tooltip("What a lovely thing <3")]
+        [Export]
+        public int varIntTheSecond = 5;
 
-    [Export]
-    public float useNormal = 1.0f;
+        [LabelColour("#FF0000")]
+        [Category("Colours", "#FFFFFF")]
+        [Export]
+        public int colourA = 4;
 
-    [Export][ForceUseBetterInspector]
-    public float useBetterInspectorOnly = 2.3f;
+        [LabelColour("#00FF00")]
+        [Export]
+        public int colourB = 4;
 
-    [Export]
-    public string varString = "";
+        [LabelColour("#0000FF")]
+        [Export]
+        public int colourC = 4;
+
+        [LabelColour("#00FFFF")]
+        [Export]
+        public int colourD = 4;
+
+        [Category("Spatial Props", iconName = "Spatial")]
+        [Export]
+        public int spatialPropX = 5;
+
+        [Export]
+        [ForceUseBetterInspector]
+        public int spatialPropY = 5;
+
+        [Export]
+        [ForceUseBetterInspector]
+        public int spatialPropZ = 5;
 
 
 
+    }
 }
